@@ -1,0 +1,10 @@
+{
+  "defaultProject": "trailApp",
+  "projects": {
+    "trailApp": {
+      "name": "trailApp",
+      "integrations": {},
+      "type": "angular"
+    }
+  }
+}

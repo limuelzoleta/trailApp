@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
 		private loadingController: LoadingController,
 		private alertController: AlertController,
-		// private authService: AuthService,
+		private authService: AuthService,
 		private router: Router
     ) {
 
@@ -40,8 +41,7 @@ export class LoginComponent implements OnInit {
   async login() {
 		const loading = await this.loadingController.create();
 		await loading.present();
-    const user = '';
-		// const user = await this.authService.login(this.credentials.value);
+		const user = await this.authService.login(this.credentials.value);
 		await loading.dismiss();
 
 		if (user) {
@@ -55,9 +55,8 @@ export class LoginComponent implements OnInit {
 		const loading = await this.loadingController.create();
 		await loading.present();
 
-		// const user = await this.authService.register(this.credentials.value);
+		const user = await this.authService.register(this.credentials.value);
 		await loading.dismiss();
-    const user = '';
 		if (user) {
 			this.router.navigateByUrl('/home', { replaceUrl: true });
 		} else {

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
+import { CommentService } from 'src/app/services/comment.service';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,8 @@ export class LoginComponent implements OnInit {
 		private loadingController: LoadingController,
 		private alertController: AlertController,
 		private authService: AuthService,
-		private router: Router
+		private router: Router,
+    private cmtSvc: CommentService
     ) {
 
   }
@@ -45,6 +47,10 @@ export class LoginComponent implements OnInit {
 		await loading.dismiss();
 
 		if (user) {
+      const comment = {
+        content: 'this is a test comment'
+      }
+      this.cmtSvc.addComment(user.user.uid, comment);
 			this.router.navigateByUrl('/home', { replaceUrl: true });
 		} else {
 			this.showAlert('Login failed', 'Please try again!');

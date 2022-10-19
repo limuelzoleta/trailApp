@@ -13,6 +13,9 @@ import { environment } from '../environments/environment';
 import { provideAuth,getAuth } from '@angular/fire/auth';
 import { provideDatabase,getDatabase } from '@angular/fire/database';
 import { LoginModule } from './pages/login/login.module';
+import { CommentService } from './services/comment.service';
+import { AngularFireDatabase, AngularFireDatabaseModule } from '@angular/fire/compat/database';
+import { AngularFireModule } from '@angular/fire/compat';
 
 @NgModule({
   declarations: [
@@ -26,11 +29,13 @@ import { LoginModule } from './pages/login/login.module';
     LoginModule,
     ReactiveFormsModule,
     FormsModule,
+    AngularFireDatabaseModule,
+    AngularFireModule.initializeApp(environment.firebase),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideDatabase(() => getDatabase())
   ],
-  providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy} ],
+  providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy}, CommentService, AngularFireDatabase ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

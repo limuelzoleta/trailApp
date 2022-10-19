@@ -5,6 +5,7 @@ import {
 	createUserWithEmailAndPassword,
 	signOut
 } from '@angular/fire/auth';
+import { CommentService } from './comment.service';
 
 type UserCredential = {
   email: string,
@@ -16,12 +17,13 @@ type UserCredential = {
 })
 
 export class AuthService {
-  
+
   constructor(private auth: Auth) { }
 
   async register({ email, password }: UserCredential) {
 		try {
 			const user = await createUserWithEmailAndPassword(this.auth, email, password);
+      console.log(user)
 			return user;
 		} catch (e) {
 			return null;
@@ -31,6 +33,12 @@ export class AuthService {
 	async login({ email, password }: UserCredential) {
 		try {
 			const user = await signInWithEmailAndPassword(this.auth, email, password);
+      console.log(user)
+      // const comment = {
+      //   content: 'this is a test comment'
+      // }
+      // this.cmtSvc.addComment(user.user.uid, comment);
+
 			return user;
 		} catch (e) {
 			return null;

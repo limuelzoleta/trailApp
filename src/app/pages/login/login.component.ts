@@ -12,6 +12,8 @@ import { CommentService } from 'src/app/services/comment.service';
 })
 export class LoginComponent implements OnInit {
 	credentials: FormGroup;
+	userRegistration: FormGroup;
+	showRegister: boolean = false;
 
 	constructor(
 		private fb: FormBuilder,
@@ -29,6 +31,12 @@ export class LoginComponent implements OnInit {
 			email: ['', [Validators.required, Validators.email]],
 			password: ['', [Validators.required, Validators.minLength(6)]]
 		});
+
+		this.userRegistration = this.fb.group({
+			name: ['', [Validators.required]],
+			email: ['', [Validators.required, Validators.email]],
+			password: ['', [Validators.required, Validators.minLength(6)]]
+		})
 	}
 
 	get email() {
@@ -38,6 +46,18 @@ export class LoginComponent implements OnInit {
 	get password() {
 		return this.credentials.get('password');
 	}
+
+	get regEmail() {
+		return this.userRegistration.get('email');
+	}
+
+	get regPassword() {
+		return this.userRegistration.get('password');
+	}
+	get name() {
+		return this.userRegistration.get('name');
+	}
+
 
 
 	async login() {
@@ -57,7 +77,7 @@ export class LoginComponent implements OnInit {
 		const loading = await this.loadingController.create();
 		await loading.present();
 
-		const user = await this.authService.register(this.credentials.value);
+		const user = await this.authService.register(this.userRegistration.value);
 		await loading.dismiss();
 		if (user) {
 			this.router.navigateByUrl('/home', { replaceUrl: true });
@@ -66,6 +86,9 @@ export class LoginComponent implements OnInit {
 		}
 	}
 
+	createUser() {
+		this.showRegister = true;
+	}
 
 	async showAlert(header: string, message: string) {
 		const alert = await this.alertController.create({

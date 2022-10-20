@@ -59,9 +59,10 @@ export class HomeComponent implements OnInit {
 
   handleChange(e: any) {
     this.commentText = e.target.innerHTML;
+    console.log(e.target.innerHTML)
   }
 
-  editComment(event: any, item: any) {
+  editComment(item: any) {
     this.commentId = item.key;
     this.commentText = item.value.content
     this.showEditButtons = true;

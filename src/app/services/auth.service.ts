@@ -5,18 +5,18 @@ import {
 	createUserWithEmailAndPassword,
 	signOut
 } from '@angular/fire/auth';
-import { CommentService } from './comment.service';
+import { AngularFireDatabase, } from '@angular/fire/compat/database'
 
 export interface UserCredential {
 	email: string,
-	password: string
+	password: string,
+	name: string
 }
 
 export interface User {
 	id: string,
 	email?: string | null,
-	displayName?: string | null,
-	avatarUrl?: string | null
+	displayName?: string | null | unknown
 }
 
 @Injectable({
@@ -25,11 +25,21 @@ export interface User {
 
 export class AuthService {
 
-	constructor(private auth: Auth) { }
+	constructor(private auth: Auth, private db: AngularFireDatabase) { }
 
-	async register({ email, password }: UserCredential) {
+	async register({ email, password, name }: UserCredential) {
 		try {
-			const user = await createUserWithEmailAndPassword(this.auth, email, password);
+			const user = await createUserWithEmailAndPassword(this.auth, email, password)
+			this.setUserName(user.user.uid, name)
+			const userInfo: User = {
+				id: user.user.uid,
+				email: user.user.email,
+				displayName: name
+			}
+
+			this.saveUserToStorage(userInfo);
+
+
 			return user;
 		} catch (e) {
 			return null;
@@ -39,14 +49,17 @@ export class AuthService {
 	async login({ email, password }: UserCredential) {
 		try {
 			const user = await signInWithEmailAndPassword(this.auth, email, password);
+
+			const userName = await this.getUserName(user.user.uid);
+			console.log(userName)
 			const userInfo: User = {
 				id: user.user.uid,
 				email: user.user.email,
-				displayName: user.user.displayName,
-				avatarUrl: user.user.photoURL
+				displayName: userName
 			}
 			this.saveUserToStorage(userInfo);
 			return user;
+
 		} catch (e) {
 			return null;
 		}
@@ -67,6 +80,22 @@ export class AuthService {
 			return null;
 		}
 		return JSON.parse(userData);
+	}
+
+	setUserName(userId: string, displayName: string) {
+		const userRef = this.db.list(`userInfo/${userId}`);
+		userRef.set('displayName', displayName);
+	}
+
+	getUserName(userId: string) {
+		return new Promise((resolve, reject) => {
+			this.db.object(`userInfo/${userId}`).valueChanges()
+				.subscribe((data: any) => {
+					resolve(data.displayName);
+				})
+		})
+
+
 	}
 
 	clearStorage() {

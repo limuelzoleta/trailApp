@@ -7,23 +7,29 @@ import {
 } from '@angular/fire/auth';
 import { CommentService } from './comment.service';
 
-type UserCredential = {
-  email: string,
-  password: string
+export interface UserCredential {
+	email: string,
+	password: string
+}
+
+export interface User {
+	id: string,
+	email?: string | null,
+	displayName?: string | null,
+	avatarUrl?: string | null
 }
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 
 export class AuthService {
 
-  constructor(private auth: Auth) { }
+	constructor(private auth: Auth) { }
 
-  async register({ email, password }: UserCredential) {
+	async register({ email, password }: UserCredential) {
 		try {
 			const user = await createUserWithEmailAndPassword(this.auth, email, password);
-      console.log(user)
 			return user;
 		} catch (e) {
 			return null;
@@ -33,12 +39,13 @@ export class AuthService {
 	async login({ email, password }: UserCredential) {
 		try {
 			const user = await signInWithEmailAndPassword(this.auth, email, password);
-      console.log(user)
-      // const comment = {
-      //   content: 'this is a test comment'
-      // }
-      // this.cmtSvc.addComment(user.user.uid, comment);
-
+			const userInfo: User = {
+				id: user.user.uid,
+				email: user.user.email,
+				displayName: user.user.displayName,
+				avatarUrl: user.user.photoURL
+			}
+			this.saveUserToStorage(userInfo);
 			return user;
 		} catch (e) {
 			return null;
@@ -46,6 +53,24 @@ export class AuthService {
 	}
 
 	logout() {
+		this.clearStorage();
 		return signOut(this.auth);
 	}
+
+	saveUserToStorage(user: User) {
+		localStorage.setItem('userData', JSON.stringify(user))
+	}
+
+	getUserData() {
+		const userData = localStorage.getItem('userData');
+		if (!userData) {
+			return null;
+		}
+		return JSON.parse(userData);
+	}
+
+	clearStorage() {
+		localStorage.clear();
+	}
+
 }

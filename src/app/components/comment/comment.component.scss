@@ -1,0 +1,14 @@
+.comment-item {
+    width: 100%;
+    background: #f1f1f1;
+    padding: 1rem 1em 0.5em;
+    font-size: 1em;
+    border-radius: 14px;
+
+    .timestamp {
+        font-size: 0.75em;
+        text-align: right;
+        padding: 0;
+        margin: 0.5rem 0;
+    }
+}

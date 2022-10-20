@@ -3,7 +3,9 @@
   "projects": {
     "trailApp": {
       "name": "trailApp",
-      "integrations": {},
+      "integrations": {
+        "capacitor": {}
+      },
       "type": "angular"
     }
   }

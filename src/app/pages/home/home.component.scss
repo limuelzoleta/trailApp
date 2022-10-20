@@ -28,3 +28,35 @@
     margin-bottom: 3rem;
   }
 }
+
+.form-row {
+  position: fixed;
+  display: flex;
+  padding: 1.5em 1em;
+  align-items: center;
+  width: 100%;
+  bottom: 0;
+
+  ion-icon {
+    font-weight: 500;
+  }
+}
+
+ion-button[shape=circle] {
+  --border-radius: 50%;
+  width: 56px;
+  height: 56px;
+}
+
+app-comment {
+  width: 100%;
+}
+
+ion-list {
+  margin-top: 1em;
+}
+
+.edit-btn-container {
+  display: flex;
+  flex-direction: column;
+}

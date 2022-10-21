@@ -37,8 +37,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.cmtSvc.getComments(this.user.id)
-      .subscribe((data: any) => {
-        console.log(data);
+      .subscribe(data => {
         this.comments = data
         this.showSpinner = false;
       })

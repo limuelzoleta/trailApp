@@ -34,11 +34,11 @@
 
 
 <ion-content [fullscreen]="true" id="main">
-  <ion-list #slidingList lines="none" *ngFor="let item of comments | keyvalue">
+  <ion-list #slidingList lines="none" *ngFor="let item of comments">
 
     <ion-item-sliding>
       <ion-item lines="none">
-        <app-comment [commentId]="item.key" [comment]="item.value"></app-comment>
+        <app-comment [commentId]="item.id" [comment]="item"></app-comment>
       </ion-item>
 
       <ion-item-options side="end">

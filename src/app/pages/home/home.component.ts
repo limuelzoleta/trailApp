@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommentService } from 'src/app/services/comment.service';
 import { IonList, MenuController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
-import { CommentComponent } from 'src/app/components/comment/comment.component';
+import { CommentService } from 'src/app/services/comment.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -20,14 +20,16 @@ export class HomeComponent implements OnInit {
   constructor(
     private cmtSvc: CommentService,
     private auth: AuthService,
+    private userSvc: UserService,
     private router: Router) { }
 
 
   ngOnInit(): void {
-    this.user = this.auth.getUserData();
+    this.user = this.userSvc.getUserDataFromLocalStorage();
 
     this.cmtSvc.getComments(this.user.id)
       .subscribe(data => {
+        console.log(data);
         this.comments = data
       })
 
@@ -63,8 +65,8 @@ export class HomeComponent implements OnInit {
   }
 
   editComment(item: any) {
-    this.commentId = item.key;
-    this.commentText = item.value.content
+    this.commentId = item.id;
+    this.commentText = item.content
     this.showEditButtons = true;
     this.slidingList.closeSlidingItems()
   }

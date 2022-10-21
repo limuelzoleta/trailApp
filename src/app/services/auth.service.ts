@@ -6,6 +6,7 @@ import {
 	signOut
 } from '@angular/fire/auth';
 import { AngularFireDatabase, } from '@angular/fire/compat/database'
+import { UserService } from './user.service';
 
 export interface UserCredential {
 	email: string,
@@ -25,21 +26,20 @@ export interface User {
 
 export class AuthService {
 
-	constructor(private auth: Auth, private db: AngularFireDatabase) { }
+	constructor(private auth: Auth, private db: AngularFireDatabase, private userSvc: UserService) { }
 
 	async register({ email, password, name }: UserCredential) {
 		try {
 			const user = await createUserWithEmailAndPassword(this.auth, email, password)
-			this.setUserName(user.user.uid, name)
+			this.userSvc.addUserInfo(user.user.uid, { displayName: name })
+
 			const userInfo: User = {
 				id: user.user.uid,
 				email: user.user.email,
 				displayName: name
 			}
 
-			this.saveUserToStorage(userInfo);
-
-
+			this.userSvc.saveUserToLocalStorage(userInfo);
 			return user;
 		} catch (e) {
 			return null;
@@ -50,14 +50,14 @@ export class AuthService {
 		try {
 			const user = await signInWithEmailAndPassword(this.auth, email, password);
 
-			const userName = await this.getUserName(user.user.uid);
-			console.log(userName)
+			const userData = await this.userSvc.getUserInfo(user.user.uid).toPromise();
+			console.log(userData)
 			const userInfo: User = {
 				id: user.user.uid,
 				email: user.user.email,
-				displayName: userName
+				displayName: userData.displayName
 			}
-			this.saveUserToStorage(userInfo);
+			this.userSvc.saveUserToLocalStorage(userInfo);
 			return user;
 
 		} catch (e) {
@@ -66,40 +66,8 @@ export class AuthService {
 	}
 
 	logout() {
-		this.clearStorage();
+		this.userSvc.clearStorage();
 		return signOut(this.auth);
-	}
-
-	saveUserToStorage(user: User) {
-		localStorage.setItem('userData', JSON.stringify(user))
-	}
-
-	getUserData() {
-		const userData = localStorage.getItem('userData');
-		if (!userData) {
-			return null;
-		}
-		return JSON.parse(userData);
-	}
-
-	setUserName(userId: string, displayName: string) {
-		const userRef = this.db.list(`userInfo/${userId}`);
-		userRef.set('displayName', displayName);
-	}
-
-	getUserName(userId: string) {
-		return new Promise((resolve, reject) => {
-			this.db.object(`userInfo/${userId}`).valueChanges()
-				.subscribe((data: any) => {
-					resolve(data.displayName);
-				})
-		})
-
-
-	}
-
-	clearStorage() {
-		localStorage.clear();
 	}
 
 }

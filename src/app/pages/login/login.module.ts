@@ -5,7 +5,6 @@ import { LoginComponent } from './login.component';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginPageRoutingModule } from './login-routing.module';
-import { CommentService } from 'src/app/services/comment.service';
 import { AngularFireDatabase, AngularFireDatabaseModule } from '@angular/fire/compat/database';
 
 

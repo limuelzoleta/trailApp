@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
-import { CommentService } from 'src/app/services/comment.service';
 
 @Component({
 	selector: 'app-login',
@@ -20,8 +19,7 @@ export class LoginComponent implements OnInit {
 		private loadingController: LoadingController,
 		private alertController: AlertController,
 		private authService: AuthService,
-		private router: Router,
-		private cmtSvc: CommentService
+		private router: Router
 	) {
 
 	}

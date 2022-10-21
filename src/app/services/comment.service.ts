@@ -1,36 +1,29 @@
-import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/compat/database'
-import { serverTimestamp } from '@angular/fire/database';
-import { Observable } from 'rxjs';
-
-export interface Comment {
-  id?: string,
-  content: string,
-  createdTime?: string,
-  updatedTime?: string,
-}
+import { Injectable, Query } from '@angular/core';
+import { collectionData, Firestore, orderBy, query, serverTimestamp, where } from '@angular/fire/firestore';
+import { addDoc, collection, doc, updateDoc } from '@firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommentService {
-  constructor(private db: AngularFireDatabase) { }
 
-  getComments(userId: string): Observable<any> {
-    return this.db.object(`comments/${userId}`).valueChanges() as Observable<any>
+  private COMMENTS_COLLECTION = 'comments/comment';
+  constructor(private firestore: Firestore) { }
+
+  getComments(userId: string) {
+    const cmtRef = collection(this.firestore, `${userId}/${this.COMMENTS_COLLECTION}`)
+    const q = query(cmtRef, orderBy('createdTime', 'asc'));
+    return collectionData(q, { idField: 'id' });
   }
 
-  addComment(userId: string, comment: Comment) {
-    const commentRef = this.db.list(`comments/${userId}`);
-    const timestamp = serverTimestamp();
-    commentRef.push({ ...comment, createdTime: timestamp })
+  addComment(userId: string, comment: any) {
+    const cmtRef = collection(this.firestore, `${userId}/${this.COMMENTS_COLLECTION}`)
+    return addDoc(cmtRef, { ...comment, createdTime: serverTimestamp() });
   }
 
-  updateComment(userId: string, commentId: string, comment: Comment) {
-    const commentRef = this.db.object(`comments/${userId}/${commentId}`);
-    const timestamp = serverTimestamp();
-    commentRef.update({ ...comment, updatedTime: timestamp });
+  updateComment(userId: string, commentId: string, comment: any) {
+    const cmtRef = doc(this.firestore, `${userId}/${this.COMMENTS_COLLECTION}/${commentId}`);
+    updateDoc(cmtRef, { ...comment, updatedTime: serverTimestamp() });
   }
-
 
 }

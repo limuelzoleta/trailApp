@@ -11,7 +11,7 @@ export class UserService {
 
   getUserInfo(userId: string) {
     const userRef = doc(this.firestore, `${userId}/${this.USER_INFO_PATH}`)
-    return docData(userRef);
+    return docData(userRef)
   }
 
   addUserInfo(userId: string, userData: any) {

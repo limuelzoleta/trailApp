@@ -16,6 +16,7 @@ export class HomeComponent implements OnInit {
   commentText: string | null;
   commentId: string | null;
   showEditButtons: boolean = false;
+  showSpinner = true;
   @ViewChild(IonList) slidingList: IonList;
   constructor(
     private cmtSvc: CommentService,
@@ -26,11 +27,20 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this.userSvc.getUserDataFromLocalStorage();
+    if (!this.user.displayName) {
+      this.user.displayName = '';
+      this.userSvc.getUserInfo(this.user.id).subscribe((data) => {
+        console.log(data);
+        this.user.displayName = data.displayName;
+        this.userSvc.saveUserToLocalStorage(this.user);
+      });
+    }
 
     this.cmtSvc.getComments(this.user.id)
-      .subscribe(data => {
+      .subscribe((data: any) => {
         console.log(data);
         this.comments = data
+        this.showSpinner = false;
       })
 
     console.log(this.commentId)

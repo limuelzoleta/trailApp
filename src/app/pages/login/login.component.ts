@@ -97,5 +97,10 @@ export class LoginComponent implements OnInit {
 		await alert.present();
 	}
 
+	cancelRegister() {
+		this.userRegistration.reset();
+		this.showRegister = false;
+	}
+
 
 }

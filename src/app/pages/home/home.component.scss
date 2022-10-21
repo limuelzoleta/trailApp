@@ -36,6 +36,7 @@
   align-items: center;
   width: 100%;
   bottom: 0;
+  background-color: #fff;
 
   ion-icon {
     font-weight: 500;
@@ -59,4 +60,8 @@ ion-list {
 .edit-btn-container {
   display: flex;
   flex-direction: column;
+}
+
+ion-spinner {
+  margin: 2rem auto;
 }

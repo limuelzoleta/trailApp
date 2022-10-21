@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { collectionData, Firestore, orderBy, query, serverTimestamp, where } from '@angular/fire/firestore';
+import { collectionData, Firestore, onSnapshot, orderBy, query, serverTimestamp, where } from '@angular/fire/firestore';
 import { addDoc, collection, doc, updateDoc } from '@firebase/firestore';
 
 @Injectable({
@@ -12,8 +12,8 @@ export class CommentService {
 
   getComments(userId: string) {
     const cmtRef = collection(this.firestore, `${userId}/${this.COMMENTS_COLLECTION}`)
-    const q = query(cmtRef, orderBy('createdTime', 'asc'));
-    return collectionData(q, { idField: 'id' });
+    const qRef = query(cmtRef, orderBy('createdTime', 'asc'));
+    return collectionData(qRef);
   }
 
   addComment(userId: string, comment: any) {

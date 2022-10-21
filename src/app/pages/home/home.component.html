@@ -34,6 +34,11 @@
 
 
 <ion-content [fullscreen]="true" id="main">
+  <ion-item lines="none" *ngIf="showSpinner">
+    <ion-spinner></ion-spinner>
+  </ion-item>
+  <ion-item *ngIf="(!comments || comments.length == 0) && !showSpinner">You don't have any comments yet</ion-item>
+
   <ion-list #slidingList lines="none" *ngFor="let item of comments">
 
     <ion-item-sliding>

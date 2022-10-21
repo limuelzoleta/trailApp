@@ -48,13 +48,9 @@ export class AuthService {
 	async login({ email, password }: UserCredential) {
 		try {
 			const user = await signInWithEmailAndPassword(this.auth, email, password);
-
-			const userData = await this.userSvc.getUserInfo(user.user.uid).toPromise();
-			console.log(userData)
 			const userInfo: User = {
 				id: user.user.uid,
-				email: user.user.email,
-				displayName: userData.displayName
+				email: user.user.email
 			}
 			this.userSvc.saveUserToLocalStorage(userInfo);
 			return user;

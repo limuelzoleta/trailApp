@@ -5,7 +5,6 @@ import {
 	createUserWithEmailAndPassword,
 	signOut
 } from '@angular/fire/auth';
-import { AngularFireDatabase, } from '@angular/fire/compat/database'
 import { UserService } from './user.service';
 
 export interface UserCredential {
@@ -26,7 +25,7 @@ export interface User {
 
 export class AuthService {
 
-	constructor(private auth: Auth, private db: AngularFireDatabase, private userSvc: UserService) { }
+	constructor(private auth: Auth, private userSvc: UserService) { }
 
 	async register({ email, password, name }: UserCredential) {
 		try {

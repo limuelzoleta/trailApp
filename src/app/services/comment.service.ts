@@ -1,4 +1,4 @@
-import { Injectable, Query } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { collectionData, Firestore, orderBy, query, serverTimestamp, where } from '@angular/fire/firestore';
 import { addDoc, collection, doc, updateDoc } from '@firebase/firestore';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { docData, Firestore } from '@angular/fire/firestore';
-import { addDoc, collection, doc, setDoc } from '@firebase/firestore';
+import { doc, setDoc } from '@firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -31,8 +31,6 @@ export class UserService {
   getUserDataFromLocalStorage() {
     return JSON.parse(localStorage.getItem('userData') || '{}');
   }
-
-
 
   clearStorage() {
     localStorage.clear()

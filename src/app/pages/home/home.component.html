@@ -45,7 +45,7 @@
     <ion-item *ngIf="(!comments || comments.length == 0) && !showSpinner">You don't have any comments yet
     </ion-item>
 
-    <ion-item-sliding lines="none" *ngFor="let item of comments">
+    <ion-item-sliding lines="none" *ngFor="let item of comments; trackBy: trackByFn">
       <ion-item lines="none">
         <app-comment [textToSpeechAvailable]="textToSpeechSupport" [commentId]="item.id" [comment]="item">
         </app-comment>

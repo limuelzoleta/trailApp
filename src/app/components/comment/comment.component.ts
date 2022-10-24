@@ -35,7 +35,7 @@ export class CommentComponent implements OnInit {
     const currentDate = new Date(timestamp * 1000);
 
     const currentDayOfMonth = currentDate.getDate();
-    const currentMonth = currentDate.getMonth(); // Be careful! January is 0, not 1
+    const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
     const hours = currentDate.getHours();
     const mins = currentDate.getMinutes()

@@ -95,6 +95,10 @@ export class HomeComponent implements OnInit {
     this.slidingList.closeSlidingItems()
   }
 
+  trackByFn(index: number, item: any): number {
+    return item.id;
+  }
+
   cancelEdit() {
     this.commentId = null;
     this.commentText = '';

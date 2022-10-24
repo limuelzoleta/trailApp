@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { collectionData, collectionSnapshots, Firestore, onSnapshot, orderBy, query, serverTimestamp, where } from '@angular/fire/firestore';
-import { addDoc, collection, doc, updateDoc } from '@firebase/firestore';
+import { collectionData, Firestore, orderBy, query } from '@angular/fire/firestore';
+import { addDoc, collection, doc, updateDoc, Timestamp } from '@firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -19,13 +19,13 @@ export class CommentService {
 
   addComment(userId: string, comment: any) {
     const cmtRef = collection(this.firestore, `${userId}/${this.COMMENTS_COLLECTION}`)
-    return addDoc(cmtRef, { ...comment, createdTime: serverTimestamp() });
+    return addDoc(cmtRef, { ...comment, createdTime: Timestamp.fromDate(new Date()) });
   }
 
   updateComment(userId: string, commentId: string, comment: any, textEdited: boolean = false) {
     const cmtRef = doc(this.firestore, `${userId}/${this.COMMENTS_COLLECTION}/${commentId}`);
-    const createdTime = comment.createdTime ? comment.createdTime : serverTimestamp()
-    updateDoc(cmtRef, { ...comment, createdTime, textEdited, updatedTime: serverTimestamp() });
+    console.log(comment.createdTime ? 'has created time' : 'have not');
+    updateDoc(cmtRef, { ...comment, textEdited, updatedTime: Timestamp.fromDate(new Date()) });
   }
 
 }

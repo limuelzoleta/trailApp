@@ -29,6 +29,7 @@
   }
 }
 
+
 .form-row {
   position: fixed;
   display: flex;
@@ -57,6 +58,11 @@ ion-list {
   margin-top: 1em;
 }
 
+.scroll-container {
+  height: calc(100vh - 220px);
+  overflow-y: scroll;
+}
+
 .edit-btn-container {
   display: flex;
   flex-direction: column;
@@ -64,4 +70,24 @@ ion-list {
 
 ion-spinner {
   margin: 2rem auto;
+}
+
+ion-item-sliding {
+  margin-bottom: 1rem;
+}
+
+ion-textarea {
+  align-self: flex-start;
+}
+
+.comment-spacer {
+  height: 220px;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  .form-row {
+    background: #202020;
+  }
+
 }

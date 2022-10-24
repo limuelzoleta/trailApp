@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonList, MenuController } from '@ionic/angular';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { IonContent, IonList } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
 import { CommentService } from 'src/app/services/comment.service';
@@ -17,7 +17,10 @@ export class HomeComponent implements OnInit {
   commentId: string | null;
   showEditButtons: boolean = false;
   showSpinner = true;
+  textToSpeechSupport = false;
   @ViewChild(IonList) slidingList: IonList;
+  @ViewChild('scrollContent', { static: false }) scrollContent: IonContent;
+
   constructor(
     private cmtSvc: CommentService,
     private auth: AuthService,
@@ -30,20 +33,31 @@ export class HomeComponent implements OnInit {
     if (!this.user.displayName) {
       this.user.displayName = '';
       this.userSvc.getUserInfo(this.user.id).subscribe((data) => {
-        console.log(data);
         this.user.displayName = data.displayName;
         this.userSvc.saveUserToLocalStorage(this.user);
       });
     }
 
+
     this.cmtSvc.getComments(this.user.id)
       .subscribe(data => {
+        console.log(data)
         this.comments = data
         this.showSpinner = false;
+        this.scrollToBottomOnInit()
       })
 
-    console.log(this.commentId)
   }
+
+  scrollToBottomOnInit() {
+    const to = setTimeout(() => {
+      this.scrollContent.scrollToBottom(500)
+      clearTimeout(to);
+    }, 300)
+
+  }
+
+
 
   logout() {
     this.auth.logout()
@@ -52,13 +66,14 @@ export class HomeComponent implements OnInit {
       })
   }
 
-  saveComment() {
+  saveComment(speak: boolean = false) {
     if (this.commentText !== null && this.commentText !== '') {
       const comment = {
-        content: this.commentText
+        content: this.commentText,
+        speak
       }
       if (this.commentId && this.commentText !== null) {
-        this.cmtSvc.updateComment(this.user.id, this.commentId, comment)
+        this.cmtSvc.updateComment(this.user.id, this.commentId, comment, true)
       } else {
         this.cmtSvc.addComment(this.user.id, comment);
       }

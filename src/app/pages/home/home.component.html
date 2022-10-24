@@ -33,17 +33,22 @@
 </ion-menu>
 
 
-<ion-content [fullscreen]="true" id="main">
-  <ion-item lines="none" *ngIf="showSpinner">
-    <ion-spinner></ion-spinner>
-  </ion-item>
-  <ion-item *ngIf="(!comments || comments.length == 0) && !showSpinner">You don't have any comments yet</ion-item>
+<ion-content [scrollEvents]="true" #scrollContent [fullscreen]="true" id="main">
+  <!-- 
+  <div class="flex-column-container">
 
-  <ion-list #slidingList lines="none" *ngFor="let item of comments">
+    <div class="scroll-container"> -->
+  <ion-list #slidingList>
+    <ion-item class="ion-no-padding" lines="none" *ngIf="showSpinner">
+      <ion-spinner></ion-spinner>
+    </ion-item>
+    <ion-item *ngIf="(!comments || comments.length == 0) && !showSpinner">You don't have any comments yet
+    </ion-item>
 
-    <ion-item-sliding>
+    <ion-item-sliding lines="none" *ngFor="let item of comments">
       <ion-item lines="none">
-        <app-comment [commentId]="item.id" [comment]="item"></app-comment>
+        <app-comment [textToSpeechAvailable]="textToSpeechSupport" [commentId]="item.id" [comment]="item">
+        </app-comment>
       </ion-item>
 
       <ion-item-options side="end">
@@ -52,19 +57,25 @@
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
-
-
-
+    <ion-item lines="none" class="comment-spacer"></ion-item>
   </ion-list>
+  <!-- </div> -->
 
   <div class="form-container">
     <form>
       <div class="form-row">
         <ion-textarea value="{{commentText}}" (change)="handleChange($event)"
           placeholder="Enter more information here..."></ion-textarea>
-        <ion-button *ngIf="!showEditButtons" shape="circle" (click)="saveComment()">
-          <ion-icon name="add-outline" size="large"></ion-icon>
-        </ion-button>
+
+
+        <div *ngIf="!showEditButtons" class="edit-btn-container">
+          <ion-button shape="circle" (click)="saveComment()">
+            <ion-icon name="add-outline" size="large"></ion-icon>
+          </ion-button>
+          <ion-button shape="circle" (click)="saveComment(true)">
+            <ion-icon name="volume-medium-outline"></ion-icon>
+          </ion-button>
+        </div>
 
         <div *ngIf="showEditButtons" class="edit-btn-container">
           <ion-button size="small" (click)="saveComment()">
@@ -77,4 +88,5 @@
       </div>
     </form>
   </div>
+  <!-- </div> -->
 </ion-content>

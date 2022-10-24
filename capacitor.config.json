@@ -3,9 +3,5 @@
     "appName": "trailApp",
     "webDir": "www",
     "bundledWebRuntime": false,
-    "plugins": {
-        "SplashScreen": {
-            "launchShowDuration": 2000
-        }
-    }
+    "plugins": {}
 }

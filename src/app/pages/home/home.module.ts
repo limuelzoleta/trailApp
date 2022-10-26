@@ -3,19 +3,19 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { HomeComponent } from './home.component';
 import { HomePageRoutingModule } from './home-routing.module';
-import { CommentComponent } from 'src/app/components/comment/comment.component';
+import { SharedComponentsModule } from 'src/app/components/shared-components.module';
 
 
 
 @NgModule({
   declarations: [
     HomeComponent,
-    CommentComponent
   ],
   imports: [
     CommonModule,
     IonicModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    SharedComponentsModule
   ]
 })
 export class HomeModule { }

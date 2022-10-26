@@ -27,13 +27,25 @@
     }
 }
 
-@media (prefers-color-scheme: dark) {
-    .comment-item {
-        background: #3b3b3b;
 
-        &.speak {
-            background-color: #3160ab
-        }
-    }
 
-}
+// body[color-theme="dark"] {
+//     .comment-item {
+//         background: #3b3b3b;
+
+//         &.speak {
+//             background-color: #3160ab
+//         }
+//     }
+// }
+
+// @media (prefers-color-scheme: dark) {
+//     .comment-item {
+//         background: #3b3b3b;
+
+//         &.speak {
+//             background-color: #3160ab
+//         }
+//     }
+
+// }

@@ -17,3 +17,9 @@
 .list-ios .item-lines-none {
     --inner-padding-end: 20px
 }
+
+body[color-theme="dark"] {
+    .apply-dark-theme-background {
+        background: #3b3b3b;
+    }
+}

@@ -4,6 +4,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
 import { CommentService } from 'src/app/services/comment.service';
 import { UserService } from 'src/app/services/user.service';
+import { TextToSpeech } from 'logmaster-capacitor-plugin';
+import { PreferenceService } from 'src/app/services/preference.service';
+import { Preferences } from '@capacitor/preferences';
 
 @Component({
   selector: 'app-home',
@@ -25,6 +28,7 @@ export class HomeComponent implements OnInit {
     private cmtSvc: CommentService,
     private auth: AuthService,
     private userSvc: UserService,
+    private prefSvc: PreferenceService,
     private router: Router) { }
 
 
@@ -38,15 +42,29 @@ export class HomeComponent implements OnInit {
       });
     }
 
-
     this.cmtSvc.getComments(this.user.id)
       .subscribe(data => {
-        console.log(data)
         this.comments = data
         this.showSpinner = false;
         this.scrollToBottomOnInit()
       })
 
+    this.initializeSettings()
+  }
+
+  async initializeSettings() {
+    this.prefSvc.getPreferencesFromFirebase(this.user.id)
+      .subscribe(async (data) => {
+        if (!data) {
+          await this.prefSvc.setDefaultPrefs(this.user.id);
+        } else {
+          this.prefSvc.setLocalPreferences(data);
+        }
+      })
+    if (!document.body.getAttribute('color-theme')) {
+      const theme = await (await Preferences.get({ key: 'theme' })).value
+      document.body.setAttribute('color-theme', theme ? theme : '');
+    }
   }
 
   scrollToBottomOnInit() {
@@ -57,16 +75,8 @@ export class HomeComponent implements OnInit {
 
   }
 
-
-
-  logout() {
-    this.auth.logout()
-      .then(() => {
-        this.router.navigateByUrl('/login', { replaceUrl: true });
-      })
-  }
-
   saveComment(speak: boolean = false) {
+    console.log(TextToSpeech.getSystemVolume());
     if (this.commentText !== null && this.commentText !== '') {
       const comment = {
         content: this.commentText,
@@ -85,7 +95,6 @@ export class HomeComponent implements OnInit {
 
   handleChange(e: any) {
     this.commentText = e.target.innerHTML;
-    console.log(e.target.innerHTML)
   }
 
   editComment(item: any) {

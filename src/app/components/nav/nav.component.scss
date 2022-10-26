@@ -1,0 +1,33 @@
+.nav-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100vh - 60px);
+    align-items: center;
+
+    .user-container {
+        padding: 3rem 1rem;
+        text-align: center;
+
+        .avatar-alt {
+            font-size: 5em;
+        }
+
+        .display-name {
+            font-weight: 500;
+            font-size: 1.5em;
+        }
+
+        .email {
+            color: var(--ion-color-secondary);
+        }
+    }
+
+    ion-button {
+        width: 100%;
+
+        &:last-child {
+            margin-bottom: 3rem;
+        }
+    }
+}

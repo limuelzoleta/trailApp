@@ -1,4 +1,5 @@
-<div [ngClass]="comment.speak ? 'comment-item speak': 'comment-item' ">
+<div
+    [ngClass]="comment.speak ? 'comment-item apply-dark-theme-background speak': 'comment-item apply-dark-theme-background' ">
     {{comment.content}}
     <div class="metadata">
         <ion-icon *ngIf="comment.speak" name="volume-medium-outline"></ion-icon>

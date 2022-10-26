@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons *ngIf="user && !showBackButton" slot="start">
+      <ion-menu-button>
+        <ion-icon name="person-circle-outline" size="large"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-buttons *ngIf="showBackButton" slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{pageTitle}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-menu #menu *ngIf="user && !showBackButton" side="start" menuId="first" contentId="main">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>User Information</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <div class="nav-content">
+      <div class="user-container">
+        <div class="avatar">
+          <ion-icon name="person-circle-outline" class="avatar-alt"></ion-icon>
+        </div>
+        <div class="user-info">
+          <div class="display-name">{{user.displayName}}</div>
+          <div class="email">{{user.email}}</div>
+        </div>
+      </div>
+      <div class="button-container">
+        <ion-button (click)="navigateToSettings()" color="primary">App Settings</ion-button>
+        <ion-button (click)="logout()" color="danger">Logout</ion-button>
+      </div>
+    </div>
+
+  </ion-content>
+</ion-menu>

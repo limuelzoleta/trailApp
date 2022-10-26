@@ -5,7 +5,7 @@ import { LoginComponent } from './login.component';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginPageRoutingModule } from './login-routing.module';
-import { AngularFireDatabase, AngularFireDatabaseModule } from '@angular/fire/compat/database';
+import { SharedComponentsModule } from 'src/app/components/shared-components.module';
 
 
 
@@ -19,6 +19,7 @@ import { AngularFireDatabase, AngularFireDatabaseModule } from '@angular/fire/co
     ReactiveFormsModule,
     IonicModule,
     LoginPageRoutingModule,
+    SharedComponentsModule
   ],
   providers: []
 })

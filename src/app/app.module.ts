@@ -19,6 +19,8 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { CommentService } from './services/comment.service';
 import { UserService } from './services/user.service';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { SharedComponentsModule } from './components/shared-components.module';
+import { SettingsModule } from './pages/settings/settings.module';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,8 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
     HomeModule,
     LoginModule,
     ReactiveFormsModule,
+    SharedComponentsModule,
+    SettingsModule,
     FormsModule,
     AngularFireDatabaseModule,
     AngularFirestoreModule.enablePersistence(),

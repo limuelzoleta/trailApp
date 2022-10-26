@@ -24,7 +24,6 @@ export class CommentService {
 
   updateComment(userId: string, commentId: string, comment: any, textEdited: boolean = false) {
     const cmtRef = doc(this.firestore, `${userId}/${this.COMMENTS_COLLECTION}/${commentId}`);
-    console.log(comment.createdTime ? 'has created time' : 'have not');
     updateDoc(cmtRef, { ...comment, textEdited, updatedTime: Timestamp.fromDate(new Date()) });
   }
 

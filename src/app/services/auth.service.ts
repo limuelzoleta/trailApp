@@ -5,6 +5,7 @@ import {
 	createUserWithEmailAndPassword,
 	signOut
 } from '@angular/fire/auth';
+import { PreferenceService } from './preference.service';
 import { UserService } from './user.service';
 
 export interface UserCredential {
@@ -25,19 +26,22 @@ export interface User {
 
 export class AuthService {
 
-	constructor(private auth: Auth, private userSvc: UserService) { }
+	constructor(
+		private auth: Auth,
+		private userSvc: UserService,
+		private prefService: PreferenceService,
+	) { }
 
 	async register({ email, password, name }: UserCredential) {
 		try {
 			const user = await createUserWithEmailAndPassword(this.auth, email, password)
 			this.userSvc.addUserInfo(user.user.uid, { displayName: name })
-
 			const userInfo: User = {
 				id: user.user.uid,
 				email: user.user.email,
 				displayName: name
 			}
-
+			await this.prefService.setDefaultPrefs(userInfo.id);
 			this.userSvc.saveUserToLocalStorage(userInfo);
 			return user;
 		} catch (e) {

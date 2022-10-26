@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Preferences } from '@capacitor/preferences';
 import { Platform } from '@ionic/angular';
 
 @Component({
@@ -16,8 +17,14 @@ export class AppComponent {
   }
 
   initializeApp() {
-    this.platform.ready().then(() => {
+    this.platform.ready().then(async () => {
       console.log('ready')
+
+      if (!document.body.getAttribute('color-theme')) {
+        const theme = await (await Preferences.get({ key: 'theme' })).value
+        document.body.setAttribute('color-theme', theme ? theme : '');
+      }
     });
+
   }
 }

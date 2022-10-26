@@ -3,7 +3,7 @@ import { TextToSpeech, TTSOptions } from 'logmaster-capacitor-plugin'
 import { CommentService } from 'src/app/services/comment.service';
 import { UserService } from 'src/app/services/user.service';
 import { Preferences } from '@capacitor/preferences';
-import { AlertController } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-comment',
@@ -12,7 +12,12 @@ import { AlertController } from '@ionic/angular';
 })
 export class CommentComponent implements OnInit {
 
-  constructor(private commentService: CommentService, private userService: UserService, private alertController: AlertController) { }
+  constructor(
+    private commentService: CommentService,
+    private userService: UserService,
+    private alertController: AlertController,
+    private platform: Platform
+  ) { }
   @Input() comment: any;
   @Input() commentId: any;
   @Input() textToSpeechAvailable: boolean;
@@ -20,7 +25,7 @@ export class CommentComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.comment.speak) {
-      this.speakMessage()
+      this.processMessage()
     }
   }
 
@@ -46,11 +51,21 @@ export class CommentComponent implements OnInit {
     return `${editedText}${currentYear}-${currentDayOfMonth}-${(currentMonth + 1)} ${hours}:${mins}`
   }
 
-  async speakMessage() {
-    const voicePref = await (await Preferences.get({ key: 'audioMessageVoice' })).value || '""';
-    const speechRatePref = await (await Preferences.get({ key: 'speechRate' })).value || "100";
-    const minVolumePref = await (await Preferences.get({ key: 'minVolumeToPlayAudio' })).value || "10";
 
+  async processMessage() {
+    const minVolumePref = await (await Preferences.get({ key: 'minVolumeToPlayAudio' })).value || "10";
+    const systemVolume = await (await TextToSpeech.getSystemVolume()).volume
+    console.log(systemVolume);
+    if (systemVolume > parseInt(minVolumePref, 10)) {
+      await this.speakMessage()
+    } else {
+      await this.showAlertMessage(this.comment.content);
+    }
+  }
+
+
+  async speakMessage() {
+    const speechRatePref = await (await Preferences.get({ key: 'speechRate' })).value || "100";
     try {
       const ttsOptions: TTSOptions = {
         text: this.comment.content,
@@ -59,17 +74,18 @@ export class CommentComponent implements OnInit {
         pitch: 1.0,
         volume: 1.0,
         category: 'ambient',
+      }
 
-      }
-      if (voicePref != 'null') {
-        const voice = JSON.parse(voicePref);
-        ttsOptions.voice = voice.index;
-      }
-      if ((await TextToSpeech.getSystemVolume()).volume > parseInt(minVolumePref, 10)) {
-        await TextToSpeech.speak(ttsOptions);
+      if (this.platform.is("ios")) {
+        const iosVoicePerf = await (await Preferences.get({ key: 'iosVoiceProfile' })).value || "en-US";
+        ttsOptions.lang = iosVoicePerf;
       } else {
-        await this.showAlertMessage(this.comment.content);
+        const androidVoicePerf = await (await Preferences.get({ key: 'androidVoiceProfile' })).value || "0";
+        ttsOptions.voice = parseInt(androidVoicePerf, 10);
       }
+      console.log(ttsOptions);
+
+      await TextToSpeech.speak(ttsOptions);
       const user = this.userService.getUserDataFromLocalStorage();
       const commentItem = { ...this.comment };
       delete commentItem.id;

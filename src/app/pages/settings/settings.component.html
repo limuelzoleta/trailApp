@@ -9,8 +9,19 @@
     </ion-item>
     <ion-item>
       <ion-label>Playback Voice</ion-label>
-      <ion-select [value]="selectedVoice" (ionChange)="handleSelectVoiceChange($event)" placeholder="Loading...">
-        <ion-select-option *ngFor="let item of voices" [value]="item">
+
+      <!-- Select for android gets index -->
+      <ion-select *ngIf="!isIOS" [value]="selectedVoice" (ionChange)="handleSelectVoiceChange($event)"
+        placeholder="Loading...">
+        <ion-select-option *ngFor="let item of voices" [value]="item.index">
+          {{item.default ? '(Default) ' + item.name : item.name}}
+        </ion-select-option>
+      </ion-select>
+
+      <!-- Select for ios gets language for selected voice -->
+      <ion-select *ngIf="isIOS" [value]="selectedVoice" (ionChange)="handleSelectVoiceChange($event)"
+        placeholder="Loading...">
+        <ion-select-option *ngFor="let item of voices" [value]="item.lang">
           {{item.default ? '(Default) ' + item.name : item.name}}
         </ion-select-option>
       </ion-select>

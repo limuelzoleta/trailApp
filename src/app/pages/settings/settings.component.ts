@@ -20,6 +20,7 @@ export class SettingsComponent implements OnInit {
   voices: any;
   minVolume: number;
   speechRate: number;
+  isIOS: boolean;
 
   constructor(
     private prefSvc: PreferenceService,
@@ -28,45 +29,31 @@ export class SettingsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isIOS = this.platform.is("ios");
     this.userInfo = this.userSvc.getUserDataFromLocalStorage()
     this.prefSvc.getPreferencesFromFirebase(this.userInfo.id).pipe(take(1))
       .subscribe((data) => {
         this.preferences = data;
+        this.selectedVoice = this.isIOS ? this.preferences.iosVoiceProfile : this.preferences.androidVoiceProfile
         this.loadSettings()
       })
 
+    TextToSpeech.getSupportedVoices().then((voices) => {
+      this.voices = this.getEnglishVoices(voices.voices);
+
+      if (this.isIOS) {
+        this.selectedVoice = this.preferences ? this.preferences.iosVoiceProfile : 'en-US';
+      } else {
+        this.selectedVoice = this.preferences ? this.preferences.androidVoiceProfile : 0;
+      }
+    })
   }
 
   async loadSettings() {
     this.darkThemeEnabled = this.preferences.theme == "dark";
     this.minVolume = this.preferences.minVolumeToPlayAudio || 10;
     this.speechRate = this.preferences.speechRate || 100;
-    this.voices = await this.loadVoices();
-    for (const voice of this.voices) {
-      if (this.preferences.audioMessageVoice === null) {
-        if (voice.default) {
-          this.selectedVoice = voice;
-          break;
-        }
-      } else {
-        if (voice.index == JSON.parse(this.preferences.audioMessageVoice).index) {
-          this.selectedVoice = voice;
-          break;
-        }
-      }
-    }
   }
-
-  async loadVoices() {
-    let voices;
-    if (document.URL.startsWith('http')) {
-      voices = await this.getVoicesForWeb();
-    } else {
-      voices = await TextToSpeech.getSupportedVoices();
-    }
-    return this.getEnglishVoices(voices);
-  }
-
 
   getEnglishVoices(voices: any) {
     voices.forEach((x: any, i: number) => {
@@ -100,7 +87,12 @@ export class SettingsComponent implements OnInit {
   }
 
   handleSelectVoiceChange(event: any) {
-    this.preferences.audioMessageVoice = JSON.stringify(event.detail.value)
+
+    if (this.platform.is("ios")) {
+      this.preferences.iosVoiceProfile = event.detail.value;
+    } else {
+      this.preferences.androidVoiceProfile = event.detail.value;
+    }
     this.selectedVoice = event.detail.value
   }
 

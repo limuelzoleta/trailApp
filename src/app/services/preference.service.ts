@@ -26,7 +26,8 @@ export class PreferenceService {
       const preferences = {
         minVolumeToPlayAudio: 10,
         theme: 'light',
-        audioMessageVoice: null,
+        iosVoiceProfile: 'en-US',
+        androidVoiceProfile: 0,
         speechRate: 100
       }
       this.savePreference(userId, preferences);

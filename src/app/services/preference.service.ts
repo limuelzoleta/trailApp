@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { doc, docData, Firestore, setDoc } from '@angular/fire/firestore';
 import { Preferences } from '@capacitor/preferences';
+import { UserService } from './user.service';
+import { take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -8,30 +10,46 @@ import { Preferences } from '@capacitor/preferences';
 export class PreferenceService {
 
   FIRESTORE_USER_PREFS_PATH = 'user_prefs';
-  constructor(private firestore: Firestore) { }
+  user: any;
+  preferences: any;
+  DEFAULT_USER_PREFS = {
+    minVolumeToPlayAudio: 10,
+    theme: 'light',
+    iosVoiceProfile: 'en-US',
+    androidVoiceProfile: 0,
+    speechRate: 100
+  }
 
-  getPreferencesFromFirebase(userId: string) {
-    const prefRef = doc(this.firestore, `${userId}/${this.FIRESTORE_USER_PREFS_PATH}`)
+
+  constructor(private firestore: Firestore, userSvc: UserService) {
+    this.user = userSvc.getUserDataFromLocalStorage();
+  }
+
+  getPreferencesFromFirebase(id = this.user.id) {
+    const prefRef = doc(this.firestore, `${id}/${this.FIRESTORE_USER_PREFS_PATH}`)
     return docData(prefRef)
   }
 
-  savePreference(userId: string, preferences: any) {
-    const prefRef = doc(this.firestore, `${userId}/${this.FIRESTORE_USER_PREFS_PATH}`);
-    console.log(preferences);
+  savePreference(preferences: any) {
+    const prefRef = doc(this.firestore, `${this.user.id}/${this.FIRESTORE_USER_PREFS_PATH}`);
     return setDoc(prefRef, preferences);
   }
 
-  setDefaultPrefs(userId: string): Promise<void> {
+  setUserPrefs(id = this.user.id) {
+    this.getPreferencesFromFirebase(id)
+      .subscribe((preferences) => {
+        this.preferences = preferences;
+        this.setLocalPreferences(preferences);
+        this.loadPreferences();
+      })
+  }
+
+  setDefaultPrefs(): Promise<void> {
     return new Promise((resolve) => {
-      const preferences = {
-        minVolumeToPlayAudio: 10,
-        theme: 'light',
-        iosVoiceProfile: 'en-US',
-        androidVoiceProfile: 0,
-        speechRate: 100
-      }
-      this.savePreference(userId, preferences);
-      this.setLocalPreferences(preferences);
+      this.preferences = this.DEFAULT_USER_PREFS;
+      this.savePreference(this.preferences);
+      this.setLocalPreferences(this.preferences);
+      this.loadPreferences();
       resolve()
     })
   }
@@ -53,5 +71,9 @@ export class PreferenceService {
   }
 
 
+  loadPreferences() {
+    const { theme } = this.preferences;
+    document.body.setAttribute('color-theme', theme ? theme : '');
+  }
 
 }

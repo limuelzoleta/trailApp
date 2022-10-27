@@ -26,45 +26,16 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private cmtSvc: CommentService,
-    private auth: AuthService,
-    private userSvc: UserService,
-    private prefSvc: PreferenceService,
-    private router: Router) { }
+  ) { }
 
 
   ngOnInit(): void {
-    this.user = this.userSvc.getUserDataFromLocalStorage();
-    if (!this.user.displayName) {
-      this.user.displayName = '';
-      this.userSvc.getUserInfo(this.user.id).subscribe((data) => {
-        this.user.displayName = data.displayName;
-        this.userSvc.saveUserToLocalStorage(this.user);
-      });
-    }
-
-    this.cmtSvc.getComments(this.user.id)
+    this.cmtSvc.getComments()
       .subscribe(data => {
         this.comments = data
         this.showSpinner = false;
         this.scrollToBottomOnInit()
       })
-
-    this.initializeSettings()
-  }
-
-  async initializeSettings() {
-    this.prefSvc.getPreferencesFromFirebase(this.user.id)
-      .subscribe(async (data) => {
-        if (!data) {
-          await this.prefSvc.setDefaultPrefs(this.user.id);
-        } else {
-          this.prefSvc.setLocalPreferences(data);
-        }
-      })
-    if (!document.body.getAttribute('color-theme')) {
-      const theme = await (await Preferences.get({ key: 'theme' })).value
-      document.body.setAttribute('color-theme', theme ? theme : '');
-    }
   }
 
   scrollToBottomOnInit() {
@@ -72,7 +43,6 @@ export class HomeComponent implements OnInit {
       this.scrollContent.scrollToBottom(500)
       clearTimeout(to);
     }, 300)
-
   }
 
   saveComment(speak: boolean = false) {
@@ -83,9 +53,9 @@ export class HomeComponent implements OnInit {
         speak
       }
       if (this.commentId && this.commentText !== null) {
-        this.cmtSvc.updateComment(this.user.id, this.commentId, comment, true)
+        this.cmtSvc.updateComment(this.commentId, comment, true)
       } else {
-        this.cmtSvc.addComment(this.user.id, comment);
+        this.cmtSvc.addComment(comment);
       }
       this.commentText = '';
       this.commentId = null;

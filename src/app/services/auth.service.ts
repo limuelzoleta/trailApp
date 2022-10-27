@@ -5,6 +5,7 @@ import {
 	createUserWithEmailAndPassword,
 	signOut
 } from '@angular/fire/auth';
+import { Preferences } from '@capacitor/preferences';
 import { PreferenceService } from './preference.service';
 import { UserService } from './user.service';
 
@@ -35,14 +36,14 @@ export class AuthService {
 	async register({ email, password, name }: UserCredential) {
 		try {
 			const user = await createUserWithEmailAndPassword(this.auth, email, password)
-			this.userSvc.addUserInfo(user.user.uid, { displayName: name })
+			this.userSvc.addUserInfo({ displayName: name })
 			const userInfo: User = {
 				id: user.user.uid,
 				email: user.user.email,
 				displayName: name
 			}
-			await this.prefService.setDefaultPrefs(userInfo.id);
 			this.userSvc.saveUserToLocalStorage(userInfo);
+			await this.prefService.setDefaultPrefs();
 			return user;
 		} catch (e) {
 			return null;
@@ -52,20 +53,15 @@ export class AuthService {
 	async login({ email, password }: UserCredential) {
 		try {
 			const user = await signInWithEmailAndPassword(this.auth, email, password);
-			const userInfo: User = {
-				id: user.user.uid,
-				email: user.user.email
-			}
-			this.userSvc.saveUserToLocalStorage(userInfo);
 			return user;
-
 		} catch (e) {
 			return null;
 		}
 	}
 
-	logout() {
+	async logout() {
 		this.userSvc.clearStorage();
+		await Preferences.clear();
 		return signOut(this.auth);
 	}
 

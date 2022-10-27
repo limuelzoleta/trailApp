@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { TextToSpeech, TTSOptions } from 'logmaster-capacitor-plugin'
 import { CommentService } from 'src/app/services/comment.service';
-import { UserService } from 'src/app/services/user.service';
 import { Preferences } from '@capacitor/preferences';
 import { AlertController, Platform } from '@ionic/angular';
 
@@ -14,7 +13,6 @@ export class CommentComponent implements OnInit {
 
   constructor(
     private commentService: CommentService,
-    private userService: UserService,
     private alertController: AlertController,
     private platform: Platform
   ) { }
@@ -61,6 +59,7 @@ export class CommentComponent implements OnInit {
     } else {
       await this.showAlertMessage(this.comment.content);
     }
+    this.completeSpeechMessage()
   }
 
 
@@ -84,15 +83,17 @@ export class CommentComponent implements OnInit {
         ttsOptions.voice = parseInt(androidVoicePerf, 10);
       }
       console.log(ttsOptions);
-
       await TextToSpeech.speak(ttsOptions);
-      const user = this.userService.getUserDataFromLocalStorage();
-      const commentItem = { ...this.comment };
-      delete commentItem.id;
-      this.commentService.updateComment(user.id, this.comment.id, { ...commentItem, speak: false }, false)
+
     } catch (e) {
       console.log(e)
     }
+  }
+
+  async completeSpeechMessage() {
+    const commentItem = { ...this.comment };
+    delete commentItem.id;
+    this.commentService.updateComment(this.comment.id, { ...commentItem, speak: false }, false)
   }
 
 

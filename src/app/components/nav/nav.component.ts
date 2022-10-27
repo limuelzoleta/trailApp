@@ -22,13 +22,9 @@ export class NavComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.user = this.userSvc.getUserDataFromLocalStorage();
-    if (!this.user.displayName) {
-      this.user.displayName = '';
-      this.userSvc.getUserInfo(this.user.id).subscribe((data) => {
-        this.user.displayName = data.displayName;
-        this.userSvc.saveUserToLocalStorage(this.user);
-      });
+    const user = this.userSvc.getUserDataFromLocalStorage();
+    if (Object.keys(user).length > 0) {
+      this.user = user;
     }
   }
 

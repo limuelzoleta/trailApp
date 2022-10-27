@@ -9,18 +9,17 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeModule } from './pages/home/home.module';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { enableIndexedDbPersistence, getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { LoginModule } from './pages/login/login.module';
-import { AngularFireDatabase, AngularFireDatabaseModule } from '@angular/fire/compat/database';
-import { AngularFireModule } from '@angular/fire/compat';
 import { CommentService } from './services/comment.service';
 import { UserService } from './services/user.service';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { SharedComponentsModule } from './components/shared-components.module';
 import { SettingsModule } from './pages/settings/settings.module';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFireModule } from '@angular/fire/compat';
 
 @NgModule({
   declarations: [
@@ -36,15 +35,18 @@ import { SettingsModule } from './pages/settings/settings.module';
     SharedComponentsModule,
     SettingsModule,
     FormsModule,
-    AngularFireDatabaseModule,
-    AngularFirestoreModule.enablePersistence(),
+    AngularFirestoreModule,
     AngularFireModule.initializeApp(environment.firebase),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideDatabase(() => getDatabase()),
-    provideFirestore(() => getFirestore())
+    provideFirestore(() => {
+      const firestore = getFirestore()
+      enableIndexedDbPersistence(firestore)
+      return firestore
+    })
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, UserService, CommentService, AngularFireDatabase],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, UserService, CommentService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

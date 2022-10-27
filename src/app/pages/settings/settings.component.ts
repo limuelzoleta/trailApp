@@ -31,7 +31,7 @@ export class SettingsComponent implements OnInit {
   ngOnInit() {
     this.isIOS = this.platform.is("ios");
     this.userInfo = this.userSvc.getUserDataFromLocalStorage()
-    this.prefSvc.getPreferencesFromFirebase(this.userInfo.id).pipe(take(1))
+    this.prefSvc.getPreferencesFromFirebase().pipe(take(1))
       .subscribe((data) => {
         this.preferences = data;
         this.selectedVoice = this.isIOS ? this.preferences.iosVoiceProfile : this.preferences.androidVoiceProfile
@@ -109,6 +109,6 @@ export class SettingsComponent implements OnInit {
 
   ngOnDestroy() {
     this.prefSvc.setLocalPreferences(this.preferences);
-    this.prefSvc.savePreference(this.userInfo.id, this.preferences);
+    this.prefSvc.savePreference(this.preferences);
   }
 }

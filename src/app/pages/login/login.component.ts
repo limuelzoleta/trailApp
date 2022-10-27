@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
-import { AuthService } from 'src/app/services/auth.service';
+import { take } from 'rxjs/operators';
+import { AuthService, User } from 'src/app/services/auth.service';
+import { PreferenceService } from 'src/app/services/preference.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
 	selector: 'app-login',
@@ -19,6 +22,8 @@ export class LoginComponent implements OnInit {
 		private loadingController: LoadingController,
 		private alertController: AlertController,
 		private authService: AuthService,
+		private userService: UserService,
+		private prefService: PreferenceService,
 		private router: Router
 	) {
 
@@ -65,10 +70,27 @@ export class LoginComponent implements OnInit {
 		await loading.dismiss();
 
 		if (user) {
+			await this.initializeUser(user);
+			await this.prefService.setUserPrefs(user.user.uid);
 			this.router.navigateByUrl('/home', { replaceUrl: true });
+
 		} else {
 			this.showAlert('Login failed', 'Please try again!');
 		}
+	}
+
+	async initializeUser(user: any): Promise<void> {
+		return new Promise((resolve) => {
+			const userInfo: User = {
+				id: user.user.uid,
+				email: user.user.email
+			}
+			this.userService.getUserInfo(user.user.uid).pipe(take(1)).subscribe((data) => {
+				userInfo.displayName = data.displayName;
+				this.userService.saveUserToLocalStorage(userInfo);
+				resolve();
+			});
+		})
 	}
 
 	async register() {

@@ -7,20 +7,23 @@ import { doc, setDoc } from '@firebase/firestore';
 })
 export class UserService {
   private USER_INFO_PATH = 'user_info';
-  constructor(private firestore: Firestore) { }
+  user: any
+  constructor(private firestore: Firestore) {
+    this.user = this.getUserDataFromLocalStorage();
+  }
 
-  getUserInfo(userId: string) {
-    const userRef = doc(this.firestore, `${userId}/${this.USER_INFO_PATH}`)
+  getUserInfo(id = this.user.id) {
+    const userRef = doc(this.firestore, `${id}/${this.USER_INFO_PATH}`)
     return docData(userRef)
   }
 
-  addUserInfo(userId: string, userData: any) {
-    const userRef = doc(this.firestore, `${userId}/${this.USER_INFO_PATH}`);
+  addUserInfo(userData: any) {
+    const userRef = doc(this.firestore, `${this.user.id}/${this.USER_INFO_PATH}`);
     return setDoc(userRef, userData);
   }
 
-  updateUserInfo(userId: string, userData: any) {
-    const userRef = doc(this.firestore, `${userId}/${this.USER_INFO_PATH}`);
+  updateUserInfo(userData: any) {
+    const userRef = doc(this.firestore, `${this.user.id}/${this.USER_INFO_PATH}`);
     return setDoc(userRef, userData);
   }
 

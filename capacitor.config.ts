@@ -9,6 +9,11 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 2000
     }
+  },
+  server: {
+    hostname: '127.0.0.1',
+    cleartext: true,
+    allowNavigation: ['*'],
   }
 };
 

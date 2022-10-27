@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { doc, docData, Firestore, setDoc } from '@angular/fire/firestore';
 import { Preferences } from '@capacitor/preferences';
 import { UserService } from './user.service';
-import { take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'

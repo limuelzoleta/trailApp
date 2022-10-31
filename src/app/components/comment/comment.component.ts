@@ -76,11 +76,11 @@ export class CommentComponent implements OnInit {
       }
 
       if (this.platform.is("ios")) {
-        const iosVoicePerf = await (await Preferences.get({ key: 'iosVoiceProfile' })).value || "en-US";
-        ttsOptions.lang = iosVoicePerf;
+        const iosVoicePerf = await (await Preferences.get({ key: 'iosVoiceProfile' })).value || "";
+        ttsOptions.voice = iosVoicePerf;
       } else {
-        const androidVoicePerf = await (await Preferences.get({ key: 'androidVoiceProfile' })).value || "0";
-        ttsOptions.voice = parseInt(androidVoicePerf, 10);
+        const androidVoicePerf = await (await Preferences.get({ key: 'androidVoiceProfile' })).value || "";
+        ttsOptions.voice = androidVoicePerf;
       }
       console.log(ttsOptions);
       await TextToSpeech.speak(ttsOptions);

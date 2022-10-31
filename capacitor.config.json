@@ -1,6 +1,6 @@
 {
-    "appId": "io.ionic.starter",
-    "appName": "trailApp",
+    "appId": "com.logmaster.trailApp",
+    "appName": "Trail App",
     "webDir": "www",
     "bundledWebRuntime": false,
     "plugins": {
@@ -13,6 +13,7 @@
         "cleartext": true,
         "allowNavigation": [
             "*"
-        ]
+        ],
+        "iosScheme": "ionic"
     }
 }

@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
-import { Preferences } from '@capacitor/preferences';
+import { initializeApp } from '@angular/fire/app';
+import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 import { PreferenceService } from './services/preference.service';
 import { UserService } from './services/user.service';
+import { initializeAuth, indexedDBLocalPersistence } from '@firebase/auth';
 
 @Component({
   selector: 'app-root',
@@ -18,15 +21,25 @@ export class AppComponent {
     private prefService: PreferenceService,
     private userService: UserService,
   ) {
-    this.initializeApp();
+    this.loadSettings();
+    this.initializeFirebase();
     this.user = this.userService.getUserDataFromLocalStorage();
   }
 
-  initializeApp() {
+  loadSettings() {
     this.platform.ready().then(() => {
       if (Object.keys(this.user).length > 0) {
         this.prefService.setUserPrefs();
       }
     })
+  }
+
+  initializeFirebase() {
+    const app = initializeApp(environment.firebase);
+    if (Capacitor.isNativePlatform()) {
+      initializeAuth(app, {
+        persistence: indexedDBLocalPersistence
+      });
+    }
   }
 }

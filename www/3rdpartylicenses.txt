@@ -103,25 +103,13 @@ Apache-2.0
 @firebase/app-check
 Apache-2.0
 
-@firebase/app-compat
-Apache-2.0
-
 @firebase/auth
-Apache-2.0
-
-@firebase/auth-compat
 Apache-2.0
 
 @firebase/component
 Apache-2.0
 
-@firebase/database
-Apache-2.0
-
 @firebase/firestore
-Apache-2.0
-
-@firebase/firestore-compat
 Apache-2.0
 
 @firebase/installations
@@ -179,14 +167,6 @@ firebase/app
 firebase/app-check
 
 firebase/auth
-
-firebase/compat/app
-
-firebase/compat/auth
-
-firebase/compat/firestore
-
-firebase/database
 
 firebase/firestore
 

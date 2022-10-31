@@ -27,23 +27,11 @@ export interface User {
 
 export class AuthService {
 
-	constructor(
-		private auth: Auth,
-		private userSvc: UserService,
-		private prefService: PreferenceService,
-	) { }
+	constructor(private auth: Auth) { }
 
-	async register({ email, password, name }: UserCredential) {
+	async register({ email, password }: UserCredential) {
 		try {
 			const user = await createUserWithEmailAndPassword(this.auth, email, password)
-			this.userSvc.addUserInfo({ displayName: name })
-			const userInfo: User = {
-				id: user.user.uid,
-				email: user.user.email,
-				displayName: name
-			}
-			this.userSvc.saveUserToLocalStorage(userInfo);
-			await this.prefService.setDefaultPrefs();
 			return user;
 		} catch (e) {
 			return null;
@@ -59,10 +47,16 @@ export class AuthService {
 		}
 	}
 
+	async getCurrentUser() {
+		return this.auth.currentUser;
+	}
+
 	async logout() {
-		this.userSvc.clearStorage();
+		localStorage.clear()
 		await Preferences.clear();
 		return signOut(this.auth);
 	}
+
+
 
 }

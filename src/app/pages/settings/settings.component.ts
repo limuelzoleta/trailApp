@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Preferences } from '@capacitor/preferences';
 import { PreferenceService } from 'src/app/services/preference.service';
 import { UserService } from 'src/app/services/user.service';
-import { ignoreElements, take } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
 import { TextToSpeech } from 'logmaster-capacitor-plugin';
 
@@ -13,8 +11,8 @@ import { TextToSpeech } from 'logmaster-capacitor-plugin';
 })
 export class SettingsComponent implements OnInit {
 
-  darkThemeEnabled: boolean;
-  preferences: any;
+  darkThemeEnabled: boolean = false;
+  preferences: any = {};
   userInfo: any;
   selectedVoice: any;
   voices: any;
@@ -31,28 +29,45 @@ export class SettingsComponent implements OnInit {
   ngOnInit() {
     this.isIOS = this.platform.is("ios");
     this.userInfo = this.userSvc.getUserDataFromLocalStorage()
-    this.prefSvc.getPreferencesFromFirebase().pipe(take(1))
+    this.prefSvc.getPreferencesFromFirebase(this.userInfo.id)
       .subscribe((data) => {
         this.preferences = data;
-        this.selectedVoice = this.isIOS ? this.preferences.iosVoiceProfile : this.preferences.androidVoiceProfile
         this.loadSettings()
       })
 
-    TextToSpeech.getSupportedVoices().then((voices) => {
-      this.voices = this.getEnglishVoices(voices.voices);
-
+    TextToSpeech.getSupportedVoices().then((voices: any) => {
+      this.voices = voices.voices;
+      let voice = "";
       if (this.isIOS) {
-        this.selectedVoice = this.preferences ? this.preferences.iosVoiceProfile : 'en-US';
+        if (this.preferences && this.preferences.iosVoiceProfile) {
+          voice = this.preferences.iosVoiceProfile != "" ? this.preferences.iosVoiceProfile : ""
+        }
+        this.selectedVoice = voice != "" ? voice : this.getDefaultVoice();
       } else {
-        this.selectedVoice = this.preferences ? this.preferences.androidVoiceProfile : 0;
+        if (this.preferences && this.preferences.androidVoiceProfile) {
+          voice = this.preferences.androidVoiceProfile != "" ? this.preferences.androidVoiceProfile : ""
+        }
+        this.selectedVoice = voice != "" ? voice : this.getDefaultVoice();
+        this.selectedVoice = this.preferences ? this.preferences.androidVoiceProfile : voices[0].voiceURI;
       }
     })
   }
 
   async loadSettings() {
-    this.darkThemeEnabled = this.preferences.theme == "dark";
-    this.minVolume = this.preferences.minVolumeToPlayAudio || 10;
-    this.speechRate = this.preferences.speechRate || 100;
+    if (this.preferences) {
+      this.darkThemeEnabled = this.preferences.theme == "dark";
+      this.minVolume = this.preferences.minVolumeToPlayAudio || 10;
+      this.speechRate = this.preferences.speechRate || 100;
+    }
+  }
+
+  getDefaultVoice() {
+    for (let voice of this.voices) {
+      if (voice.default || voice.lang.startsWith('en')) {
+        return voice.voiceURI
+      }
+    }
+    return this.voices[0].voiceURI
   }
 
   getEnglishVoices(voices: any) {
@@ -87,7 +102,6 @@ export class SettingsComponent implements OnInit {
   }
 
   handleSelectVoiceChange(event: any) {
-
     if (this.platform.is("ios")) {
       this.preferences.iosVoiceProfile = event.detail.value;
     } else {
@@ -109,6 +123,6 @@ export class SettingsComponent implements OnInit {
 
   ngOnDestroy() {
     this.prefSvc.setLocalPreferences(this.preferences);
-    this.prefSvc.savePreference(this.preferences);
+    this.prefSvc.savePreference(this.preferences, this.userInfo.id);
   }
 }

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { collectionData, Firestore, orderBy, query } from '@angular/fire/firestore';
 import { addDoc, collection, doc, updateDoc, Timestamp } from '@firebase/firestore';
 import { UserService } from './user.service';

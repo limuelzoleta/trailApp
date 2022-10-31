@@ -9,13 +9,13 @@ import { UserService } from './user.service';
 export class PreferenceService {
 
   FIRESTORE_USER_PREFS_PATH = 'user_prefs';
-  user: any;
+  user: any = {};
   preferences: any;
   DEFAULT_USER_PREFS = {
     minVolumeToPlayAudio: 10,
     theme: 'light',
-    iosVoiceProfile: 'en-US',
-    androidVoiceProfile: 0,
+    iosVoiceProfile: null,
+    androidVoiceProfile: null,
     speechRate: 100
   }
 
@@ -29,24 +29,29 @@ export class PreferenceService {
     return docData(prefRef)
   }
 
-  savePreference(preferences: any) {
-    const prefRef = doc(this.firestore, `${this.user.id}/${this.FIRESTORE_USER_PREFS_PATH}`);
+  savePreference(preferences: any, id = this.user.id) {
+    const prefRef = doc(this.firestore, `${id}/${this.FIRESTORE_USER_PREFS_PATH}`);
     return setDoc(prefRef, preferences);
   }
 
   setUserPrefs(id = this.user.id) {
-    this.getPreferencesFromFirebase(id)
-      .subscribe((preferences) => {
-        this.preferences = preferences;
-        this.setLocalPreferences(preferences);
-        this.loadPreferences();
-      })
+    if (!this.user.id)
+      this.getPreferencesFromFirebase(id)
+        .subscribe((preferences) => {
+          if (preferences) {
+            this.preferences = preferences;
+            this.setLocalPreferences(this.preferences);
+            this.loadPreferences();
+          } else {
+            this.setDefaultPrefs(id);
+          }
+        })
   }
 
-  setDefaultPrefs(): Promise<void> {
+  setDefaultPrefs(id = this.user.id): Promise<void> {
     return new Promise((resolve) => {
       this.preferences = this.DEFAULT_USER_PREFS;
-      this.savePreference(this.preferences);
+      this.savePreference(this.preferences, id);
       this.setLocalPreferences(this.preferences);
       this.loadPreferences();
       resolve()
@@ -59,12 +64,16 @@ export class PreferenceService {
         await Preferences.set({ key, value })
       }
 
-      if (typeof value == 'object') {
+      if (typeof value == 'object' && value !== null) {
         await Preferences.set({ key, value: JSON.stringify(value) })
       }
 
       if (typeof value == 'number') {
         await Preferences.set({ key, value: value.toString(10) })
+      }
+
+      if (value === null) {
+        await Preferences.set({ key, value: "" })
       }
     }
   }

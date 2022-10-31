@@ -8,18 +8,18 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeModule } from './pages/home/home.module';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { enableIndexedDbPersistence, getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
-import { provideAuth, getAuth } from '@angular/fire/auth';
-import { provideDatabase, getDatabase } from '@angular/fire/database';
+import { provideAuth, initializeAuth, indexedDBLocalPersistence } from '@angular/fire/auth';
 import { LoginModule } from './pages/login/login.module';
 import { CommentService } from './services/comment.service';
 import { UserService } from './services/user.service';
 import { SharedComponentsModule } from './components/shared-components.module';
 import { SettingsModule } from './pages/settings/settings.module';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-import { AngularFireModule } from '@angular/fire/compat';
+import { enableIndexedDbPersistence, initializeFirestore } from 'firebase/firestore';
+
+// import { indexedDBLocalPersistence } from 'firebase/auth';
 
 @NgModule({
   declarations: [
@@ -35,16 +35,13 @@ import { AngularFireModule } from '@angular/fire/compat';
     SharedComponentsModule,
     SettingsModule,
     FormsModule,
-    AngularFirestoreModule,
-    AngularFireModule.initializeApp(environment.firebase),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideDatabase(() => getDatabase()),
     provideFirestore(() => {
-      const firestore = getFirestore()
-      enableIndexedDbPersistence(firestore)
+      const firestore = getFirestore();
+      enableIndexedDbPersistence(firestore);
       return firestore
-    })
+    }),
+    provideAuth(() => initializeAuth(getApp(), { persistence: indexedDBLocalPersistence }))
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, UserService, CommentService],
   bootstrap: [AppComponent]

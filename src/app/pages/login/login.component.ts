@@ -61,8 +61,6 @@ export class LoginComponent implements OnInit {
 		return this.userRegistration.get('name');
 	}
 
-
-
 	async login() {
 		const loading = await this.loadingController.create();
 		await loading.present();
@@ -71,11 +69,25 @@ export class LoginComponent implements OnInit {
 
 		if (user) {
 			await this.initializeUser(user);
-			await this.prefService.setUserPrefs(user.user.uid);
 			this.router.navigateByUrl('/home', { replaceUrl: true });
 
 		} else {
 			this.showAlert('Login failed', 'Please try again!');
+		}
+	}
+
+
+	async register() {
+		const loading = await this.loadingController.create();
+		await loading.present();
+
+		const user = await this.authService.register(this.userRegistration.value);
+		await loading.dismiss();
+		if (user) {
+			await this.initializeNewUser(user, this.userRegistration.value.name);
+			this.router.navigateByUrl('/home', { replaceUrl: true });
+		} else {
+			this.showAlert('Registration failed', 'Please try again!');
 		}
 	}
 
@@ -85,25 +97,27 @@ export class LoginComponent implements OnInit {
 				id: user.user.uid,
 				email: user.user.email
 			}
-			this.userService.getUserInfo(user.user.uid).pipe(take(1)).subscribe((data) => {
+			this.userService.getUserInfo(userInfo.id).pipe(take(1)).subscribe(async (data) => {
 				userInfo.displayName = data.displayName;
 				this.userService.saveUserToLocalStorage(userInfo);
+				await this.prefService.setUserPrefs(userInfo.id)
 				resolve();
 			});
 		})
 	}
 
-	async register() {
-		const loading = await this.loadingController.create();
-		await loading.present();
-
-		const user = await this.authService.register(this.userRegistration.value);
-		await loading.dismiss();
-		if (user) {
-			this.router.navigateByUrl('/home', { replaceUrl: true });
-		} else {
-			this.showAlert('Registration failed', 'Please try again!');
-		}
+	async initializeNewUser(user: any, name: string): Promise<void> {
+		return new Promise(async (resolve) => {
+			const userInfo: User = {
+				id: user.user.uid,
+				email: user.user.email,
+				displayName: name,
+			}
+			this.userService.saveUserToLocalStorage(userInfo);
+			await this.userService.addUserInfo({ displayName: name }, userInfo)
+			await this.prefService.setDefaultPrefs(userInfo.id)
+			resolve();
+		})
 	}
 
 	createUser() {

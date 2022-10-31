@@ -17,9 +17,8 @@ import { CommentService } from './services/comment.service';
 import { UserService } from './services/user.service';
 import { SharedComponentsModule } from './components/shared-components.module';
 import { SettingsModule } from './pages/settings/settings.module';
-import { enableIndexedDbPersistence, initializeFirestore } from 'firebase/firestore';
+import { enableIndexedDbPersistence } from 'firebase/firestore';
 
-// import { indexedDBLocalPersistence } from 'firebase/auth';
 
 @NgModule({
   declarations: [

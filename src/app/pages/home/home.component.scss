@@ -55,10 +55,6 @@ app-comment {
   width: 100%;
 }
 
-ion-list {
-  margin-top: 1em;
-}
-
 .scroll-container {
   height: calc(100vh - 220px);
   overflow-y: scroll;
@@ -79,6 +75,10 @@ ion-item-sliding {
 
 ion-textarea {
   align-self: flex-start;
+}
+
+ion-item:first-child {
+  margin-top: 1rem;
 }
 
 .comment-spacer {

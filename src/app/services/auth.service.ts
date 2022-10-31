@@ -6,20 +6,8 @@ import {
 	signOut
 } from '@angular/fire/auth';
 import { Preferences } from '@capacitor/preferences';
-import { PreferenceService } from './preference.service';
-import { UserService } from './user.service';
+import { UserCredential } from '../utils/definitions';
 
-export interface UserCredential {
-	email: string,
-	password: string,
-	name: string
-}
-
-export interface User {
-	id: string,
-	email?: string | null,
-	displayName?: string | null | unknown
-}
 
 @Injectable({
 	providedIn: 'root'

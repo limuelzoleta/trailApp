@@ -3,9 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { take } from 'rxjs/operators';
-import { AuthService, User } from 'src/app/services/auth.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { PreferenceService } from 'src/app/services/preference.service';
 import { UserService } from 'src/app/services/user.service';
+import { User } from 'src/app/utils/definitions';
 
 @Component({
 	selector: 'app-login',

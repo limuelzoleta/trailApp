@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { doc, docData, Firestore, setDoc } from '@angular/fire/firestore';
 import { Preferences } from '@capacitor/preferences';
+import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { USER_PREFS_PATH } from '../utils/constants';
+import { User, UserPreference } from '../utils/definitions';
 import { UserService } from './user.service';
 
 @Injectable({
@@ -8,10 +12,9 @@ import { UserService } from './user.service';
 })
 export class PreferenceService {
 
-  FIRESTORE_USER_PREFS_PATH = 'user_prefs';
-  user: any = {};
-  preferences: any;
-  DEFAULT_USER_PREFS = {
+  user: User;
+  preferences: UserPreference;
+  DEFAULT_USER_PREFS: UserPreference = {
     minVolumeToPlayAudio: 10,
     theme: 'light',
     iosVoiceProfile: null,
@@ -24,31 +27,33 @@ export class PreferenceService {
     this.user = userSvc.getUserDataFromLocalStorage();
   }
 
-  getPreferencesFromFirebase(id = this.user.id) {
-    const prefRef = doc(this.firestore, `${id}/${this.FIRESTORE_USER_PREFS_PATH}`)
-    return docData(prefRef)
+  getPreferencesFromFirebase(id: string = this.user.id): Observable<UserPreference> {
+    const prefRef = doc(this.firestore, `${id}/${USER_PREFS_PATH}`)
+    return docData(prefRef) as Observable<UserPreference>
   }
 
-  savePreference(preferences: any, id = this.user.id) {
-    const prefRef = doc(this.firestore, `${id}/${this.FIRESTORE_USER_PREFS_PATH}`);
+  savePreference(preferences: UserPreference, id: string = this.user.id) {
+    const prefRef = doc(this.firestore, `${id}/${USER_PREFS_PATH}`);
     return setDoc(prefRef, preferences);
   }
 
-  setUserPrefs(id = this.user.id) {
-    if (!this.user.id)
-      this.getPreferencesFromFirebase(id)
-        .subscribe((preferences) => {
+  setUserPrefs(id: string = this.user.id): Promise<void> {
+    return new Promise((resolve) => {
+      this.getPreferencesFromFirebase(id).pipe(take(1))
+        .subscribe(async (preferences) => {
           if (preferences) {
             this.preferences = preferences;
             this.setLocalPreferences(this.preferences);
             this.loadPreferences();
           } else {
-            this.setDefaultPrefs(id);
+            await this.setDefaultPrefs(id);
           }
+          resolve()
         })
+    })
   }
 
-  setDefaultPrefs(id = this.user.id): Promise<void> {
+  setDefaultPrefs(id: string = this.user.id): Promise<void> {
     return new Promise((resolve) => {
       this.preferences = this.DEFAULT_USER_PREFS;
       this.savePreference(this.preferences, id);
@@ -58,7 +63,7 @@ export class PreferenceService {
     })
   }
 
-  async setLocalPreferences(preferences: any) {
+  async setLocalPreferences(preferences: UserPreference) {
     for (const [key, value] of Object.entries(preferences)) {
       if (typeof value == 'string') {
         await Preferences.set({ key, value })

@@ -1,12 +1,7 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonContent, IonList } from '@ionic/angular';
-import { AuthService } from 'src/app/services/auth.service';
-import { Router } from '@angular/router';
 import { CommentService } from 'src/app/services/comment.service';
-import { UserService } from 'src/app/services/user.service';
-import { TextToSpeech } from 'logmaster-capacitor-plugin';
-import { PreferenceService } from 'src/app/services/preference.service';
-import { Preferences } from '@capacitor/preferences';
+import { Comment, User } from 'src/app/utils/definitions';
 
 @Component({
   selector: 'app-home',
@@ -14,8 +9,8 @@ import { Preferences } from '@capacitor/preferences';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  user: any;
-  comments: any;
+  user: User;
+  comments: Comment[];
   commentText: string | null;
   commentId: string | null;
   showEditButtons: boolean = false;
@@ -46,9 +41,8 @@ export class HomeComponent implements OnInit {
   }
 
   saveComment(speak: boolean = false) {
-    console.log(TextToSpeech.getSystemVolume());
     if (this.commentText !== null && this.commentText !== '') {
-      const comment = {
+      const comment: Comment = {
         content: this.commentText,
         speak
       }
@@ -67,15 +61,17 @@ export class HomeComponent implements OnInit {
     this.commentText = e.target.innerHTML;
   }
 
-  editComment(item: any) {
-    this.commentId = item.id;
-    this.commentText = item.content
-    this.showEditButtons = true;
+  editComment(item: Comment) {
+    if (item.id) {
+      this.commentId = item.id;
+      this.commentText = item.content
+      this.showEditButtons = true;
+    }
     this.slidingList.closeSlidingItems()
   }
 
-  trackByFn(index: number, item: any): number {
-    return item.id;
+  trackByFn(index: number, item: Comment): string {
+    return item.id ? item.id : '';
   }
 
   cancelEdit() {

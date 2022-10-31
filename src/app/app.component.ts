@@ -26,10 +26,10 @@ export class AppComponent {
     this.user = this.userService.getUserDataFromLocalStorage();
   }
 
-  loadSettings() {
-    this.platform.ready().then(() => {
+  async loadSettings() {
+    this.platform.ready().then(async () => {
       if (Object.keys(this.user).length > 0) {
-        this.prefService.setUserPrefs();
+        await this.prefService.setUserPrefs();
       }
     })
   }

@@ -3,6 +3,7 @@ import { TextToSpeech, TTSOptions } from 'logmaster-capacitor-plugin'
 import { CommentService } from 'src/app/services/comment.service';
 import { Preferences } from '@capacitor/preferences';
 import { AlertController, Platform } from '@ionic/angular';
+import { Comment } from 'src/app/utils/definitions';
 
 @Component({
   selector: 'app-comment',
@@ -16,10 +17,10 @@ export class CommentComponent implements OnInit {
     private alertController: AlertController,
     private platform: Platform
   ) { }
-  @Input() comment: any;
-  @Input() commentId: any;
+  @Input() comment: Comment;
+  @Input() commentId: string;
   @Input() textToSpeechAvailable: boolean;
-  selectedVoice: any;
+  selectedVoice: string;
 
   ngOnInit(): void {
     if (this.comment.speak) {
@@ -82,7 +83,6 @@ export class CommentComponent implements OnInit {
         const androidVoicePerf = await (await Preferences.get({ key: 'androidVoiceProfile' })).value || "";
         ttsOptions.voice = androidVoicePerf;
       }
-      console.log(ttsOptions);
       await TextToSpeech.speak(ttsOptions);
 
     } catch (e) {
@@ -93,7 +93,8 @@ export class CommentComponent implements OnInit {
   async completeSpeechMessage() {
     const commentItem = { ...this.comment };
     delete commentItem.id;
-    this.commentService.updateComment(this.comment.id, { ...commentItem, speak: false }, false)
+    if (this.comment.id)
+      this.commentService.updateComment(this.comment.id, { ...commentItem, speak: false }, false)
   }
 
 
@@ -109,7 +110,6 @@ export class CommentComponent implements OnInit {
     const timeOut = setTimeout(async () => {
       await alert.dismiss();
       clearTimeout(timeOut);
-
     }, duration)
 
   }

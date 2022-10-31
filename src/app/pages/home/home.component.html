@@ -10,7 +10,8 @@
 
     <ion-item-sliding lines="none" *ngFor="let item of comments; trackBy: trackByFn">
       <ion-item lines="none">
-        <app-comment [textToSpeechAvailable]="textToSpeechSupport" [commentId]="item.id" [comment]="item">
+        <app-comment [textToSpeechAvailable]="textToSpeechSupport" [commentId]="item.id ? item.id : ''"
+          [comment]="item">
         </app-comment>
       </ion-item>
 

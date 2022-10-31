@@ -3,6 +3,7 @@ import { PreferenceService } from 'src/app/services/preference.service';
 import { UserService } from 'src/app/services/user.service';
 import { Platform } from '@ionic/angular';
 import { TextToSpeech } from 'logmaster-capacitor-plugin';
+import { User, UserPreference } from 'src/app/utils/definitions';
 
 @Component({
   selector: 'app-settings',
@@ -12,9 +13,9 @@ import { TextToSpeech } from 'logmaster-capacitor-plugin';
 export class SettingsComponent implements OnInit {
 
   darkThemeEnabled: boolean = false;
-  preferences: any = {};
-  userInfo: any;
-  selectedVoice: any;
+  preferences: UserPreference;
+  userInfo: User;
+  selectedVoice: string;
   voices: any;
   minVolume: number;
   speechRate: number;

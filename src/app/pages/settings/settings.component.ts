@@ -38,27 +38,22 @@ export class SettingsComponent implements OnInit {
 
     TextToSpeech.getSupportedVoices().then((voices: any) => {
       this.voices = voices.voices;
-      let voice = "";
-      if (this.isIOS) {
-        if (this.preferences && this.preferences.iosVoiceProfile) {
-          voice = this.preferences.iosVoiceProfile != "" ? this.preferences.iosVoiceProfile : ""
-        }
-        this.selectedVoice = voice != "" ? voice : this.getDefaultVoice();
-      } else {
-        if (this.preferences && this.preferences.androidVoiceProfile) {
-          voice = this.preferences.androidVoiceProfile != "" ? this.preferences.androidVoiceProfile : ""
-        }
-        this.selectedVoice = voice != "" ? voice : this.getDefaultVoice();
-        this.selectedVoice = this.preferences ? this.preferences.androidVoiceProfile : voices[0].voiceURI;
-      }
     })
   }
 
   async loadSettings() {
+    console.log('load settings', this.preferences)
     if (this.preferences) {
       this.darkThemeEnabled = this.preferences.theme == "dark";
       this.minVolume = this.preferences.minVolumeToPlayAudio || 10;
       this.speechRate = this.preferences.speechRate || 100;
+      if (this.isIOS && this.preferences.iosVoiceProfile) {
+        this.selectedVoice = this.preferences.iosVoiceProfile
+      } else if (this.preferences.androidVoiceProfile) {
+        this.selectedVoice = this.preferences.androidVoiceProfile
+      } else {
+        this.selectedVoice = ""
+      }
     }
   }
 
